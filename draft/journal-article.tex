@@ -10,6 +10,7 @@
 \usepackage{bm}
 \usepackage{mathtools}
 \usepackage[capitalise]{cleveref}
+\usepackage{todonotes}
 % New theorem-like environments will be introduced by using the commands \theoremstyle and \newtheorem.
 % Please note that the environments proof and definition are already defined within dgryuter.sty.
 \theoremstyle{dgthm}
@@ -29,7 +30,7 @@
 \let\vec\bm
 \newcommand\norm[1]{\lVert#1\rVert}
 \newcommand\abs[1]{\lvert#1\rvert}
-
+\newcommand{\uz}[1]{\todo[inline, color=teal!30]{\textbf{UZ}: #1}}
 \begin{document}
 
 	
@@ -175,13 +176,14 @@ find $(\vec{u}_h,p_h)\in \vec{V}_h\times Q_h$ such that
 We would like to define a discrete counterpart of the solution operator $S$, yet as we know from \cite{Brezzi} such an operator may not exist if the inf-sup condition is not satisfied.
 To overcome this issue, we introduce the following proposition:
 \begin{proposition}[Proposition 6.5.2 \cite{BBF}]
+  \label{prop:BBG}
   Since the bilinear form $a:\vec{V}_h\times \vec{V}_h\to \mathbb{R}$ is continuous and coercive on the kernel of the discrete divergence operator, i.e.~$\exists \alpha>0$ such that
   \begin{equation}
     a(\vec{v}_h,\vec{v}_h)\geq \alpha\, \norm{\vec{v}_h}^2_{\vec{V}} \qquad \forall \vec{v}_h\in \vec{K}_h\coloneqq \left\{\vec{v}_h\in \vec{V}_h\,|\, b(\vec{v}_h,q_h)=0\, \forall q_h\in Q_h\right\},
   \end{equation}
   then \eqref{eq:discreteSourceStokes} has at least one solution of the form $(\vec{u}_h,p_h)\in \vec{V}_h\times Q_h$. Furthermore, the $\vec{u}_h$ component of the solution is uniquely determined by the right-hand side $\vec{f}$ and the following estimate holds:
   \begin{equation}
-    \norm{\vec{u}_h}_{\vec{V}}\leq \frac{1}{\alpha}\norm{\vec{f}_h}_{\vec{V}^\prime}.
+    \norm{\vec{u}_h}_{\vec{V}}\leq \frac{1}{\alpha}\norm{\vec{f}}_{\vec{V}^\prime}.
   \end{equation}
   Hence, we can define the discrete solution operator $S_h:\vec{V}_h\to \vec{V}_h\times Q_h$ as the operator that maps $\vec{f}\in \vec{V}_h$ to a solution of \eqref{eq:discreteSourceStokes} when $\vec{f}$ is the right-hand side, suppose the one with the smallest norm.
 \end{proposition}
@@ -220,28 +222,89 @@ To achieve this goal we introduce two subspaces of $\vec{V}$ and $Q$ endowed wit
   \end{equation}
 \end{definition}
 \begin{theorem}[Theorem 6.5.1 and Theorem 6.5.2 \cite{BBF}]
+  \label{thm:BGG}
   The weak approximability condition on $(Q_h,Q_0)$ and the strong approximability condition on $(\vec{V}_h,\vec{V}_0)$ are necessary and sufficient for the convergence of $T_h$ to $T$ in the operator norm $\norm{\cdot}_{\mathcal{L}(\vec{H},\vec{H})}$.
   In particular, if both conditions are satisfied, then the following estimate holds:
   \begin{equation}
-    \norm{T\vec{f}-T_h\vec{f}}_{\vec{H}}\leq \norm{T\vec{f}-T_h\vec{f}}_{\vec{V}}\leq C h^{\min\{\gamma_1,\gamma_2\}}\norm{\vec{f}}_{\vec{H}}, \qquad \forall \vec{f}\in \vec{H}.
+    \norm{T\vec{f}-T_h\vec{f}}_{\vec{H}}\leq \norm{T\vec{f}-T_h\vec{f}}_{\vec{V}}\leq C \max\{\rho_1(h),\rho_2(h)\}\norm{\vec{f}}_{\vec{H}}, \qquad \forall \vec{f}\in \vec{H}.
   \end{equation}
 \end{theorem}
 The previous theorem implies us that the discrete eigenvalues and eigenfunctions converge to the continuous ones without any spurious modes.
-We can now discuss how to determine the order of convergence of the eigenvalues and eigenfunctions, since we have already established that the strong and weak approximability conditions are sufficient to guarantee the convergence of the convergence without spurious modes.
+\begin{corollary}
+  Let us consider a non-zero eigenvalue $\omega$ of the continuous operator $T:\vec{K}\to\vec{K}$ and let $\{\phi_i\}_{i=1}^{m}$ be the corresponding eigenfunctions, spanning the eigenspace $\vec{E}_\omega\subset \vec{H}^s$, for some $s>0$.
+  Assuming that the strong and weak approximability conditions are satisfied, then there exists $h_0>0$ such that for all $h<h_0$ there are exactly $m$ discrete eigenvalues $\omega_{h,i}$, $i=1,\ldots,m$, of the discrete operator $T_h:\vec{K}_h\to \vec{K}_h$ with associated eigenfunctions $\phi_{h,i}$, $i=1,\ldots,m$, converging to $\omega$.
+\end{corollary}
 
+We can now discuss how to determine the order of convergence of the eigenvalues and eigenfunctions, since we have already established that the strong and weak approximability conditions are sufficient to guarantee the convergence of the convergence without spurious modes.
 The most common approach to determine the order of convergence of the eigenvalues and eigenfunctions is to use the one presented in \cite{MercierOsbornRappazRaviart}.
 Unfortunately, this approach can not used if the $S_h$ operator is not uniquely defined, as is the case when the inf-sup condition is not satisfied.
-\begin{lemma}
-  FIX ME 
-\end{lemma}
+For this reason, we will introduce the following new result which is heavily inspired by the idea presented in \cite{BBG} and the treatment of non-conforming eigenvalue problems presented in \cite{BoffiActa}.
+\begin{theorem}
+  Let us consider a non-zero eigenvalue $\omega$ of the continuous operator $T:\vec{K}\to\vec{K}$ and let $\{\phi_i\}_{i=1}^{m}$ be the corresponding eigenfunctions, spanning the eigenspace $\vec{E}_\omega\subset \vec{H}^s$, for some $s>0$.
+  Assume furthermore that the following full regularity weak and strong approximability conditions are satisfied, i.e.
+  \begin{align}
+    \underset{\vec{v}_h\in \vec{K}_h}{\inf} \norm{\vec{u}-\vec{v}_h}_{\vec{V}} &\leq C \rho_{1,s}(h)\norm{\vec{u}}_{\vec{H}^s(\Omega)}\qquad \forall \vec{u}\in \vec{V}_0\cap \vec{H}^s(\Omega),\\
+  \underset{\vec{v}_h\in \vec{K}_h}{\sup} \frac{b(\vec{v}_h,q)}{\norm{\vec{v}_h}_{\vec{V}}} &\leq C \rho_{2,r}(h)\norm{q}_{H^{r}(\Omega)} \qquad \forall q\in Q_0\cap H^{r}(\Omega),
+  \end{align}
+  where $H^r(\Omega)$ is the Sobolev space where the continuous pressure $p_i$ associated to the eigenfunction $\phi_i\in \vec{H}^s(\Omega)$ lives, i.e. $p_i\in H^r(\Omega)$ for $i=1,\ldots,m$.
+  Then, there exists $h_0>0$ such that for all $h<h_0$ there are exactly $m$ discrete eigenvalues $\omega_{h,i}$, $i=1,\ldots,m$, of the discrete operator $T_h:\vec{K}_h\to \vec{K}_h$ with associated eigenfunctions $\phi_{h,i}$, $i=1,\ldots,m$, converging to $\omega$ and
+  the the following estimates hold:
+  \begin{equation}
+    \abs{\omega-\omega_{h,i}}\leq C \max\{\rho_{1,s}(h),\rho_{2,r}(h)\}^2\max\{\norm{\phi_1}_{\vec{H}(\Omega)},\ldots,\norm{\phi_m}_{\vec{H}(\Omega)}\}^2, \qquad i=1,\ldots,m, 
+  \end{equation}
+  where $\omega_{h,i}$ are the discrete eigenvalues converging to $\omega$.
+\end{theorem}
+\begin{proof}
+  From \cite[Theorem 9.7]{BoffiActa} or \cite[Theorem 7.3]{BabuskaOsborn} adapted for the self-adjoint case, we know that the following estimate holds:
+  \begin{equation}
+    \abs{\omega-\omega_{h,i}}\leq C 
+      \Bigg\{
+        \sum_{i,j=1}^{m}\abs{\Big((T-T_h)\phi_i,\phi_j\Big)} + \norm{(T-T_h)_{\big|_{\vec{E}_\omega}}}_{\mathcal{L}(\vec{H},\vec{H})}^2.
+      \Bigg\}
+  \end{equation}
+  To bound the second term in the equation we can proceed analogously as in \cref{thm:BGG}, taking full advantage of the full regularity strong and weak approximability conditions, i.e.
+  \begin{equation}
+    \norm{(T-T_h)_{\big|_{\vec{E}_\omega}}}_{\mathcal{L}(\vec{H},\vec{H})}\leq C \max\{\rho_{1,s}(h),\rho_{2,r}(h)\},\label{eq:secondTerm}
+  \end{equation}
+  where we here assumed that the element $\vec{E}_\omega$ are now normalised in $\vec{H}^s(\Omega)$.
+  We turn our attention to the first term in the estimate and treat following the approach presented in \cite{BoffiActa} for non-conforming methods.
+  We begin observing that
+  \begin{align}
+    \Big((T-T_h)\phi_i,\phi_j\Big) = (T\phi_i,\phi_j) - (T_h\phi_i,\phi_j) = a(T\phi_i,T\phi_j) - a(T_h\phi_i,T\phi_j),
+  \end{align}
+  adding and subtracting $a(T_h\phi_i,T\phi_j)$ and adding and subtracting $a((T-T_h)\phi_i,T_h \phi_j)$ we obtain
+  \begin{align}
+    \Big((T-T_h)\phi_i,\phi_j\Big) &= a(T\phi_i,T\phi_j) - a(T_h\phi_i, (T-T_h)\phi_j) - a(T_h\phi_i,T\phi_j)\\
+    &= a((T-T_h)\phi_i,T\phi_j) - a(T_h\phi_i,(T-T_h)\phi_j)\\
+    &= a((T-T_h)\phi_i,(T-T_h)\phi_j) - a((T-T_h)\phi_i,T_h\phi_j) - a(T_h\phi_i,(T-T_h)\phi_j).
+  \end{align}
+  Thus taking the absolute value and using the triangle inequality we have
+  \begin{align}
+    \abs{\Big((T-T_h)\phi_i,\phi_j\Big)} \leq \abs{a((T-T_h)\phi_i,(T-T_h)\phi_j)} +\abs{a((T-T_h)\phi_i,T_h\phi_j)} +\abs{a(T_h\phi_i,(T-T_h)\phi_j)},
+  \end{align}
+  using now \cref{prop:BBG} we know that there exists at least two $p_{h,i},p_{h,j}\in Q_0$ such that
+  \begin{equation}
+    \abs{\Big((T-T_h)\phi_i,\phi_j\Big)} \leq \abs{a((T-T_h)\phi_i,(T-T_h)\phi_j)} +\abs{b(T_h\phi_j,p-p_{h,j})} +\abs{b(T_h\phi_i,p-p_{h,i})}.
+  \end{equation}
+  Since $T_h\phi_i, T_h\phi_j\in \vec{K}_h$ we know that $b(T_h\phi_j,p_{h,j})=0$ and $b(T_h\phi_i,p_{h,i})=0$, thus we can use the full regularity weak approximability condition to obtain
+  \begin{align}
+    \abs{\Big((T-T_h)\phi_i,\phi_j\Big)} & \leq \abs{a((T-T_h)\phi_i,(T-T_h)\phi_j)} + C\norm{\vec{v}_h}_{\vec{V}} \Big(\rho_{2,r}(h)\norm{p_j}_{H^r(\Omega)} + \rho_{2,r}(h)\norm{p_i}_{H^r(\Omega)}\Big).
+  \end{align}
+  Using the continuity of the bilinear form $a(\cdot,\cdot)$ and \eqref{eq:secondTerm} together with controlling $\norm{T\phi_i}_{\vec{V}}$ by $\norm{\phi_i}_{\vec{H}}$ by \cref{prop:BBG} we obtain
+  \begin{align}
+    \abs{\Big((T-T_h)\phi_i,\phi_j\Big)} & \leq C \Big(\max\{\rho_{1,s}(h),\rho_{2,r}(h)\}^2 + \rho_{2,r}(h)\Big)\max\{\norm{\phi_i}_{\vec{H}},\norm{\phi_j}_{\vec{H}}\}.
+  \end{align}
+  Summing over $i,j=1,\ldots,m$ we obtain the desired result.
+\end{proof}
 
 \section{Sufficient conditions for the strong approximability condition}
 \label{sec:strong_approximability_conditions}
-In this section, we will discuss two general criteria that guarantee the strong approximability condition.
+\uz{\textbf{@DB}: Mentioned that this should become a proposition. How do you think of writing it ? It is not immediately clear to me.}
+In this section, we discuss two general criteria that guarantee the strong approximability condition.
 We focus our attention on the strong approximability condition and not on the weak approximability condition because the weak approximability condition is a trivial consequence of the approximation properties of the finite element space $Q_h$.
-In fact, following \cite{BBG} we observe that since $b(\vec{v}_h,q_h)$ vanish for all $\vec{v}_h\in \vec{K}_h$ and $q_h\in Q_h$ we can subtract from \eqref{eq:weakApprox} to obtain
+In fact, following \cite{BBG} we observe that since $b(\vec{v}_h,q_h)$ vanish for all $\vec{v}_h\in \vec{K}_h$ and $q_h\in Q_h$ we can subtract $q_h$ from \eqref{eq:weakApprox} to obtain
 \begin{equation}
-  \underset{\vec{v}_h\in \mathbb{K}_h}{sup} \frac{b(\vec{v}_h, q)}{\norm{\vec{v}_h}_{\vec{V}}}= \underset{\vec{v}_h\in \mathbb{K}_h}{sup} \frac{b(\vec{v}_h, q-q_h)}{\norm{\vec{v}_h}_{\vec{V}}}\leq \norm{q-q_h}_{Q}.
+  \underset{\vec{v}_h\in \vec{K}_h}{sup} \frac{b(\vec{v}_h, q)}{\norm{\vec{v}_h}_{\vec{V}}}= \underset{\vec{v}_h\in \mathbb{K}_h}{sup} \frac{b(\vec{v}_h, q-q_h)}{\norm{\vec{v}_h}_{\vec{V}}}\leq C \norm{q-q_h}_{Q}.
 \end{equation}
 The previous inequality shows that the weak approximability condition is verified as long as any function of $Q_0$ can be ``well'' approximated by a function in $Q_h$.
 The first criterion we will discuss is intimately related to the inf-sup condition and exactly divergence-free discretisation.
@@ -249,8 +312,8 @@ The first criterion we will discuss is intimately related to the inf-sup conditi
   \label{thm:strongApproxInfSup}
   Let us consider a discrete eigenvalue problem of the type of \eqref{eq:discreteStokes} and assume the following approximation properties hold:
   \begin{align}
-    \forall q\in Q, \quad \exists q_h\in Q_h \text{ such that } \norm{q-q_h}_{Q}\leq C_1 h^{\gamma_1}\norm{q}_{Q_0},\\
-    \forall \vec{u}\in \vec{V}, \quad \exists \vec{v}_h\in \vec{V}_h \text{ such that } \norm{\vec{u}-\vec{v}_h}_{\vec{V}}\leq C_2 h^{\gamma_2}\norm{\vec{u}}_{\vec{V_0}},
+    \forall q\in Q, \quad \exists q_h\in Q_h \text{ such that } \norm{q-q_h}_{Q}\leq C_1 \rho_1(h)\norm{q}_{Q_0},\\
+    \forall \vec{u}\in \vec{V}, \quad \exists \vec{v}_h\in \vec{V}_h \text{ such that } \norm{\vec{u}-\vec{v}_h}_{\vec{V}}\leq C_2 \rho_2(h)\norm{\vec{u}}_{\vec{V_0}},
   \end{align}
   for some $C_1,C_2>0$ and $\gamma_1,\gamma_2>0$.
   We denote the range of the discrete divergence operator as $\hat{Q}_h$, i.e.
@@ -262,15 +325,15 @@ The first criterion we will discuss is intimately related to the inf-sup conditi
 \begin{proof}
   We begin observing that if the inf-sup condition is satisfied by the pair $(\vec{V}_h,\hat{Q}_h)$, then the following estimate holds \cite[Proposition 5.1.3]{BBF}:
   \begin{equation}
-    \underset{\vec{v}_h\in \hat{\vec{K}}_h}{\inf}\norm{\vec{v}-\vec{v}_h}_{\vec{V}}\leq \underset{\vec{v}_h\in \vec{V}_h}{\inf}\norm{\vec{v}-\vec{v}_h}_{\vec{V}}\leq C(\beta)h^{\gamma_2}\norm{\vec{v}}_{\vec{V}},\label{eq:strongApproxOptimalKernel}
+    \underset{\vec{v}_h\in \hat{\vec{K}}_h}{\inf}\norm{\vec{v}-\vec{v}_h}_{\vec{V}}\leq C \underset{\vec{v}_h\in \vec{V}_h}{\inf}\norm{\vec{v}-\vec{v}_h}_{\vec{V}}\leq C(\beta)\rho_2(h)\norm{\vec{v}}_{\vec{V}},\label{eq:strongApproxOptimalKernel}
   \end{equation}
   where $\hat{\vec{K}}_h\coloneqq \left\{\vec{v}_h\in \vec{V}_h\,|\, b(\vec{v}_h,q_h)=0\, \forall q_h\in \hat{Q}_h\right\}$.
   Furthermore, we notice that $\hat{\vec{K}}_h\subset \vec{K}_h$, in fact if we pick $\vec{v}_h\in \hat{\vec{K}}_h$ and $q_h = \nabla\cdot \vec{v}_h$ then $b(\vec{v}_h,q_h)=0$ implies that the divergence of $\vec{v}_h$ vanishes almost everywhere, hence $\vec{v}_h\in \vec{K}_h$.
   Therefore from \eqref{eq:strongApproxOptimalKernel} we have that the strong approximability condition is satisfied and we know the weak approximability condition is trivially satisfied.
 \end{proof}
 \begin{example}[Scott--Vogelius]
-  One of the classical examples of divergence-free discretisation, in two dimensions, is the Scott-Vogelius finite element pair $\left(\vec{\mathcal{P}}^{k}(\mathcal{T}_h),\mathcal{P}^{k-1}_{disc}(\mathcal{T}_h)\right)$, where $\mathcal{T}_h$ is a simplicial mesh of the domain $\Omega$.
-  While the Scott-.Vogelius pair seems the most natural choice for the Stokes eigenvalue problem, it is well known that the inf-sup condition is not satisfied by all $k\geq 1$.
+  One of the classical examples of divergence-free discretisation, in two dimensions, is the Scott-Vogelius finite element pair $\left(\vec{\mathcal{P}}^{k}(\mathcal{T}_h),\mathcal{P}^{k-1}_{disc}(\mathcal{T}_h)\right)$, where $\mathcal{T}_h$ is a simplicial mesh, with no nearly singular vertices, of the domain $\Omega$.
+  While the Scott-Vogelius pair seems the most natural choice for the Stokes eigenvalue problem, it is well known that the inf-sup condition is not satisfied by all $k\geq 1$.
   In fact, it has been shown in \cite{GuzmanScott,ScottVogelius} that the inf-sup condition is satisfied by the Scott-Vogelius pair on all meshes only if $k\geq 4$ and we consider as pressure space the subspaces of $\mathcal{P}^{k-1}_{disc}(\mathcal{T}_h)$ defined as
   \begin{equation}
     \hat{Q}_h = \left\{q_h\in \mathcal{P}^{k-1}_{disc}(\mathcal{T}_h)\,|\, \sum_{j=1}^{N(\vec{z})} (-1)^{N-j} q_h\big|_{T_j(\vec{z})}(\vec{z}) = 0 \quad \forall \vec{z}\in \mathcal{S}(\mathcal{T}_h)\right\},
@@ -279,67 +342,74 @@ The first criterion we will discuss is intimately related to the inf-sup conditi
   Since the inf-sup condition is satisfied for $\left(\vec{\mathcal{P}}^{k}(\mathcal{T}_h),\hat{Q}_h\right)$, we can apply Theorem \ref{thm:strongApproxInfSup} to conclude that the strong and weak approximability conditions are satisfied by the finite element pair $\left(\vec{\mathcal{P}}^{k}(\mathcal{T}_h),\mathcal{P}^{k-1}_{disc}(\mathcal{T}_h)\right)$.
   Hence, the Scott--Vogelius pair, with $k\geq 4$, is a good choice for the Stokes eigenvalue problem, independently of any geometrical restriction on the mesh.
   Furthermore, under minor assumptions on the mesh it has been proven in \cite{GuzmanScott2} that there exists a pressure space $\hat{Q}_h$ such that the inf-sup condition is satisfied for the Scott-Vogelius pair also with $k=3$, hence the strong approximability condition is satisfied for the finite element pair $\left(\vec{\mathcal{P}}^{3}(\mathcal{T}_h),\mathcal{P}^{2}_{disc}(\mathcal{T}_h)\right)$.
-  Therefore the Scott--Vogelius pair with $k=3$ is a good choice for the Stokes eigenvalue problem, provided that the mesh satisfies the minor assumptions of \cite{GuzmanScott2} as we show in Example \ref{ex:ScottVogelius3}.
+  Therefore the Scott--Vogelius pair with $k=3$ is a good choice for the Stokes eigenvalue problem, provided that the mesh satisfies the minor assumptions of \cite{GuzmanScott2} as we show in \cref{ex:ScottVogelius4}.
+  \uz{The question marks will apear until we have the corresponding numerical experiments to reference.}
 \end{example}
 \begin{example}[Alfeld split meshes]
   In \cite{ArnoldQin, FuGuzmanNeilan} it is shown that for two-dimensional domain the inf-sup condition is satisfied by the pair $\left(\vec{\mathcal{P}}^2(\mathcal{T}_h),\mathcal{P}^1_{disc}(\mathcal{T}_h)\right)$ on special meshes known as Alfeld split meshes.
   Alfeld split meshes are a particular type of mesh where each triangle is split into three sub-triangles by connecting the vertices of the triangle with its barycenter.
   Interestingly, Alfeld splits remove any singular vertex from the mesh, hence the pressure space $\hat{Q}_h$ is the full space $\mathcal{P}^1_{disc}(\mathcal{T}_h)$.
   Since, on Alfeld splits, the inf-sup condition is satisfied for $\left(\vec{\mathcal{P}}^2(\mathcal{T}_h),\mathcal{P}^1_{disc}(\mathcal{T}_h)\right)$, we can apply Theorem \ref{thm:strongApproxInfSup} to conclude that the strong and weak approximability conditions are satisfied for the finite element pair $\left(\vec{\mathcal{P}}^2(\mathcal{T}_h),\mathcal{P}^2_{disc}(\mathcal{T}_h)\right)$ and $\left(\vec{\mathcal{P}}^2(\mathcal{T}_h),\mathcal{P}^2(\mathcal{T}_h)\right)$.
-  A numerical study of the above-mentioned finite element pairs on Alfeld split meshes will be presented in Example \ref{ex:Alfeld}.
+  A numerical study of the above-mentioned finite element pairs on Alfeld split meshes will be presented in \cref{ex:Alfeld}.
+  \uz{The question marks will apear until we have the corresponding numerical experiments to reference.}
 \end{example}
 \begin{remark}
+  \uz{I don't understand \textbf{@DB} comment here.}
   In the previous example we didn't discuss the $\left(\vec{\mathcal{P}}^2(\mathcal{T}_h),\mathcal{P}^1(\mathcal{T}_h)\right)$ finite element pair. In fact, while Theorem \ref{thm:strongApproxInfSup} would ensure both strong and weak approximability as for the other pairs in the previous example, the $\left(\vec{\mathcal{P}}^2(\mathcal{T}_h),\mathcal{P}^1(\mathcal{T}_h)\right)$ is inf-sup stable on its own as proven in \cite{Boffi, HoodTaylor}.
 \end{remark}
 \begin{example}[Powell--Sabin]
   It has been shown in \cite{GuzmanLischkeNeilan, FabienGuzmanNeilanZytoon} that for two-dimensional domains the inf-sup condition is satisfied by the pair $\left(\vec{\mathcal{P}}^1(\mathcal{T}_h),\hat{Q}_h\right)$, provided $\mathcal{T}_h$ is obtained via Powell-Sabin splits and the pressure space is defined as
   \begin{equation}
-    \hat{Q}_h = \left\{q_h\in \mathcal{P}^{0}(\mathcal{T}_h)\,|\, \sum_{j=1}^{N(\vec{z})} (-1)^{N-j} q_h\big|_{T_j(\vec{z})}(\vec{z}) = 0 \quad \forall \vec{z}\in \mathcal{S}(\mathcal{T}_h)\right\},
+    \hat{Q}_h = \left\{q_h\in \mathcal{P}^{0}(\mathcal{T}_h)\,|\, \sum_{j=1}^{N(\vec{z})} (-1)^{N-j} q_h\big|_{T_j(\vec{z})}(\vec{z}) = 0 \quad \forall \vec{z}\in \mathcal{S}(\mathcal{T}_h)\right\}.
   \end{equation}
   Powell--Sabin split meshes are a particular type of mesh where each triangle is split into six sub-triangles by first performing an Alfeld split and then connecting the midpoint of the original triangles with the barycenter.
   Since, on Powell--Sabin splits, the inf-sup condition is satisfied for $\left(\vec{\mathcal{P}}^1(\mathcal{T}_h),\hat{Q}_h\right)$, we can apply Theorem \ref{thm:strongApproxInfSup} to conclude that the strong and weak approximability conditions are satisfied for the finite element pair $\left(\vec{\mathcal{P}}^1(\mathcal{T}_h),\mathcal{P}^1_{disc}(\mathcal{T}_h)\right)$ and $\left(\vec{\mathcal{P}}^1(\mathcal{T}_h),\mathcal{P}^1(\mathcal{T}_h)\right)$.
-  A numerical study of the above-mentioned finite element pairs on Powell--Sabin split meshes will be presented in Example \ref{ex:Powell-Sabin}.
+  A numerical study of the above-mentioned finite element pairs on Powell--Sabin split meshes will be presented in \cref{ex:Powell-Sabin}.
+  \uz{The question marks will apear until we have the corresponding numerical experiments to reference.}
 \end{example}
 \begin{example}
-  Scott-Vogelius elements pair can be used also when the domain $\Omega$ is three-dimensional. In particular, it has been proven in \cite{Zhang} that on freudenthal meshes the Scott-Vogelius finite element pair is inf-sup stable for $k\geq 6$.
-  Furthermore, it is well known in the literature that if suitable constraints are imposed on the pressure space then for $k\geq 2$ the Scott-Vogelius pair is inf-sup stable on Alfeld splits also for three-dimensional domains, and on Worsey--Farin splits the Scott-Vogelius pair is inf-sup stable for any $k\geq 1$, \cite{FuGuzmanNeilan, FabienGuzmanNeilanZytoon}.
+  Scott-Vogelius elements pair can be used also when the domain $\Omega$ is three-dimensional. In particular, it has been proven in \cite{Zhang} that on Freudenthal meshes the Scott-Vogelius finite element pair is inf-sup stable for $k\geq 6$.
+  Furthermore, it is known in the from \cite{FuGuzmanNeilan,FabienGuzmanNeilanZytoon} that if suitable constraints are imposed on the pressure space then for $k\geq 2$ the Scott-Vogelius pair is inf-sup stable on Alfeld splits also for three-dimensional domains, and on Worsey--Farin splits the Scott-Vogelius pair is inf-sup stable for any $k\geq 1$, \cite{FuGuzmanNeilan, FabienGuzmanNeilanZytoon}.
   Applying Theorem \ref{thm:strongApproxInfSup} we can then prove that the finite element pairs $\left(\vec{\mathcal{P}}^k(\mathcal{T}_h), \mathcal{P}^{k-1}_{disc}(\mathcal{T}_h)\right)$, $\left(\vec{\mathcal{P}}^k(\mathcal{T}_h), \mathbb{P}^{k}_{disc}(\mathcal{T}_h)\right)$ and $\left(\vec{\mathcal{P}}^k(\mathcal{T}_h), \mathbb{P}^{k}(\mathcal{T}_h)\right)$ all satisfy the weak and strong approximability condition for $k\geq 2$ on Alfeld splites meshes and for $k\geq1$ in Worsey--Farin splits.
 \end{example}
 \begin{remark}
-  As we discussed in many previous examples in order to obtain an inf-sup stable pair of finite elements from the classical Scott-Vogelius pair $\left(\vec{\mathcal{P}}^k(\mathcal{T}_h),\mathcal{P}^{k-1}_{disc}(\mathcal{T}_h)\right)$ we need to impose constraints on the pressure space at the singular vertices of the mesh.
+  As we discussed in many previous examples, in order to obtain an inf-sup stable pair of finite elements from the classical Scott-Vogelius pair $\left(\vec{\mathcal{P}}^k(\mathcal{T}_h),\mathcal{P}^{k-1}_{disc}(\mathcal{T}_h)\right)$ we need to impose constraints on the pressure space at the singular vertices of the mesh.
   Interestingly enough many nearly singular vertices will cause more problems than an actually singular vertex. 
-  In fact, a well-known phenomenon is that the inf-sup constant $\beta$ blows up as vertices in the mesh approach a singular vertex, hence even if the inf-sup condition is satisfied the Scott-Vogelius pair is not stable in practice.
+  In fact, a well-known phenomenon is that the inf-sup constant $\beta$ blows up as vertices in the mesh approach a singular vertex.
+  While we would expect the convergence rate of the eigenvalues and eigenfunctions to degenerate as the vertices of the mesh become singular, we will show in \ref{ex:singularity} that the rate of convergence of the eigenvalues and eigenfunctions remains optimal independently of the geometrical properties of the mesh.
+  \uz{The question marks will apear until we have the corresponding numerical experiments to reference.}
+  Such observation suggests that Theorem \ref{thm:strongApproxInfSup} is not ``sharp'' with respect to the geometrical properties of the mesh, for this reason, we will now present a second criterion that guarantees the strong and weak approximability conditions and that is independent of the singularity of the vertices in the mesh.
 \end{remark}
-While we would expect the convergence rate of the eigenvalues and eigenfunctions to degenerate as the vertices of the mesh become singular, we will show in Example \ref{ex:singularity} that the rate of convergence of the eigenvalues and eigenfunctions remains optimal independently of the geometrical properties of the mesh.
-Such observation suggests that Theorem \ref{thm:strongApproxInfSup} is not ``sharp'' with respect to the geometrical properties of the mesh, for this reason, we will now present a second criterion that guarantees the strong and weak approximability conditions and that is independent of the singularity of the vertices in the mesh.
-Our approach is based on the way the approximation properties of divergence-free discrete functions are proven in \cite{AinsworthParker}.
+We now present an alternative approach to obtain strong stability estimates based on the way the approximation properties of divergence-free discrete functions are proven in \cite[Lemma 6.4]{AinsworthParker}.
 In particular, we will make use of the curl operator that in two dimensions is defined as
 \begin{equation}
   \nabla \times: \Sigma \to \vec{V} , \qquad \sigma\mapsto \begin{pmatrix} \partial_y \sigma & - \partial_x \sigma \end{pmatrix},
 \end{equation}
-where as usual $\Sigma$ is the Sobolev space $H^2(\Omega)$, with appropriate boundary conditions.
+where $\Sigma$ is the Sobolev space $H^2(\Omega)$, with null average and appropriate boundary conditions, endowed with the norm $\norm{\sigma}_{\Sigma} = \norm{\sigma}_{H^2(\Omega)}$ \cite{FalkNeilan}.
 \begin{theorem}
 \label{thm:strongApproxCurl}
-Let us consider a conforming finite element space $\Sigma_h$ of $\Sigma$, such that $\nabla\times:\Sigma_h\to \vec{V}_h$ is surjective and has a right-bounded inverse, with inverse norm $C_S$ independent of the mesh size $h$ and the singularity of the vertices of the mesh.
+Let us consider a conforming finite element space $\Sigma_h$ of $\Sigma$, such that $\nabla\times:\Sigma_h\to \vec{K}_h$ is surjective and has a right-bounded inverse, with inverse norm $C_S$ independent of the mesh geometry. 
 We now consider a discrete eigenvalue problem of the type of \eqref{eq:discreteStokes} and assume the following approximation properties hold:
 \begin{align}
-  \forall q\in Q, \quad \exists q_h\in Q_h \text{ such that } \norm{q-q_h}_{Q}\leq C_1 h^{\gamma_1}\norm{q}_{Q_0},\\
-  \forall \sigma\in \Sigma, \quad \exists \tau_h\in \Sigma_h \text{ such that } \norm{\sigma-\tau_h}_{\Sigma}\leq C_2 h^{\gamma_2}\norm{\vec{u}}_{\vec{V}_0},\label{eq:approxSigma}
+  \forall q\in Q, \quad \exists q_h\in Q_h \text{ such that } \norm{q-q_h}_{Q}\leq C_1 \rho_1(h)\norm{q}_{Q_0},\\
+  \forall \sigma\in \Sigma, \quad \exists \tau_h\in \Sigma_h \text{ such that } \norm{\sigma-\tau_h}_{\Sigma}\leq C_2\rho_2(h)\norm{\vec{u}}_{\vec{V}_0},\label{eq:approxSigma}
 \end{align}
 for some $C_1,C_2>0$ and $\gamma_1,\gamma_2>0$.
 Under this assumption, the strong and weak approximability conditions are satisfied by the finite element pair $(\vec{V}_h,Q_h)$.
 \end{theorem}
 \begin{proof}
-  As previously discussed the weak approximability condition follows trivially from the approximation properties of $Q_h$, hence we will focus our attention on the strong approximability condition.
-  To prove the strong approximability condition we begin observing that since the operator $\nabla\times:\Sigma\to\vec{V}$  and $\nabla\times:\Sigma_h\to\vec{V}_h$ are both surjective, for all $\vec{u}\in \vec{V}_0$ and $\vec{v}_h\in \vec{V}_h$ there exists $\sigma\in \Sigma$ and $\tau_h\in \Sigma_h$ such that $\nabla\times \sigma = \vec{u}$ and $\nabla\times \tau_h = \vec{v}_h$.
+  As previously discussed, the weak approximability condition follows trivially from the approximation properties of $Q_h$, hence we will focus our attention on the strong approximability condition.
+  To prove the strong approximability condition we begin observing that since the operator $\nabla\times:\Sigma\to\vec{V}$  and $\nabla\times:\Sigma_h\to\vec{V}_h$ are both surjective, for all $\vec{u}\in \vec{V}_0$ and $\vec{v}_h\in \vec{K}_h$ there exists $\sigma\in \Sigma$ and $\tau_h\in \Sigma_h$ such that $\nabla\times \sigma = \vec{u}$ and $\nabla\times \tau_h = \vec{v}_h$.
   We then proceed using the fact that the curl has a right-bounded inverse to estimate $\norm{\vec{u}-\vec{v}_h}_{\vec{V}}$ as follows
   \begin{align}
 \norm{\vec{u}-\vec{v}_h}_{\vec{V}} &= \norm{\nabla\times\sigma-\nabla\times\tau_h}_{\vec{V}}\leq C_S\norm{\sigma-\tau_h}_{\Sigma},
   \end{align}
   finally using the approximation properties of $\Sigma_h$ we obtain the desired estimate.
 \end{proof}
+\uz{Since we decided to realte the keep FEEC considerations to the next section I decided to keep discussing everything in terms of the right bounded inverse here.
+In the next section we can specify more what is going on.}
 \begin{remark}
-  We would like to point out that \eqref{eq:approxSigma} follows from the classical Bramble--Hilbert lemma.
+  We would like to point out that \eqref{eq:approxSigma} for $\mathbb{P}_k$ Lagrangian elements with $k\geq 4$ is a consequence of the best approximation estiamtes presented in \cite[Theorem 4.1]{Suri} together with the use of the Poincaré inequality for functions with null integral average.
 \end{remark}
 \bibliographystyle{plain} % We choose the "plain" reference style
 \bibliography{metrix}
