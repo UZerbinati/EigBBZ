@@ -381,9 +381,9 @@ The first criterion we will discuss is intimately related to the inf-sup conditi
   Such observation suggests that Theorem \ref{thm:strongApproxInfSup} is not ``sharp'' with respect to the geometrical properties of the mesh, for this reason, we will now present a second criterion that guarantees the strong and weak approximability conditions and that is independent of the singularity of the vertices in the mesh.
 \end{remark}
 We now present an alternative approach to obtain strong stability estimates based on the way the approximation properties of divergence-free discrete functions are proven in \cite[Lemma 6.4]{AinsworthParker}.
-In particular, we will make use of the curl operator that in two dimensions is defined as
+In particular, we will make use of the surjective curl operator that in two dimensions is defined as
 \begin{equation}
-  \nabla \times: \Sigma \to \vec{V} , \qquad \sigma\mapsto \begin{pmatrix} \partial_y \sigma & - \partial_x \sigma \end{pmatrix},
+  \nabla \times: \Sigma \to \vec{K} , \qquad \sigma\mapsto \begin{pmatrix} \partial_y \sigma & - \partial_x \sigma \end{pmatrix},
 \end{equation}
 where $\Sigma$ is the Sobolev space $H^2(\Omega)$, with null average and appropriate boundary conditions, endowed with the norm $\norm{\sigma}_{\Sigma} = \norm{\sigma}_{H^2(\Omega)}$ \cite{FalkNeilan}.
 \begin{theorem}
@@ -399,7 +399,7 @@ Under this assumption, the strong and weak approximability conditions are satisf
 \end{theorem}
 \begin{proof}
   As previously discussed, the weak approximability condition follows trivially from the approximation properties of $Q_h$, hence we will focus our attention on the strong approximability condition.
-  To prove the strong approximability condition we begin observing that since the operator $\nabla\times:\Sigma\to\vec{V}$  and $\nabla\times:\Sigma_h\to\vec{V}_h$ are both surjective, for all $\vec{u}\in \vec{V}_0$ and $\vec{v}_h\in \vec{K}_h$ there exists $\sigma\in \Sigma$ and $\tau_h\in \Sigma_h$ such that $\nabla\times \sigma = \vec{u}$ and $\nabla\times \tau_h = \vec{v}_h$.
+  To prove the strong approximability condition we begin observing that since the operator $\nabla\times:\Sigma\to\vec{K}$  and $\nabla\times:\Sigma_h\to\vec{K}_h$ are both surjective, for all $\vec{u}\in \vec{V}_0$ and $\vec{v}_h\in \vec{K}_h$ there exists $\sigma\in \Sigma$ and $\tau_h\in \Sigma_h$ such that $\nabla\times \sigma = \vec{u}$ and $\nabla\times \tau_h = \vec{v}_h$.
   We then proceed using the fact that the curl has a right-bounded inverse to estimate $\norm{\vec{u}-\vec{v}_h}_{\vec{V}}$ as follows
   \begin{align}
 \norm{\vec{u}-\vec{v}_h}_{\vec{V}} &= \norm{\nabla\times\sigma-\nabla\times\tau_h}_{\vec{V}}\leq C_S\norm{\sigma-\tau_h}_{\Sigma},
