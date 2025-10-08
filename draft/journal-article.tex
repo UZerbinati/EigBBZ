@@ -183,9 +183,9 @@ To overcome this issue, we introduce the following proposition:
   \end{equation}
   then \eqref{eq:discreteSourceStokes} has at least one solution of the form $(\vec{u}_h,p_h)\in \vec{V}_h\times Q_h$. Furthermore, the $\vec{u}_h$ component of the solution is uniquely determined by the right-hand side $\vec{f}$ and the following estimate holds:
   \begin{equation}
-    \norm{\vec{u}_h}_{\vec{V}}\leq \frac{1}{\alpha}\norm{\vec{f}}_{\vec{V}^\prime}.
+    \norm{\vec{u}_h}_{\vec{V}}\leq \frac{1}{\alpha}\norm{\vec{f}}_{\vec{H}}.
   \end{equation}
-  Hence, we can define the discrete solution operator $S_h:\vec{V}_h\to \vec{V}_h\times Q_h$ as the operator that maps $\vec{f}\in \vec{V}_h$ to a solution of \eqref{eq:discreteSourceStokes} when $\vec{f}$ is the right-hand side, suppose the one with the smallest norm.
+  Hence, we can define the discrete solution operator $S_h:\vec{H}\to \vec{V}_h\times Q_h$ as the operator that maps $\vec{f}\in \vec{H}$ to a solution of \eqref{eq:discreteSourceStokes} when $\vec{f}$ is the right-hand side, suppose the one with the smallest norm.
 \end{proposition}
 Clearly, the existence of multiple discrete solutions when lacking the inf-sup condition forces us to consider a different approach to the well-posedness of the discrete eigenvalue problem, than just asking for $\norm{S-S_h}_{\mathcal{L}(\vec{V},\vec{V})}\to 0$ as $h\to 0$.
 For this reason we consider the following ``prolongation'' operators and the ``restriction'' operators defined as their adjoints:
@@ -250,7 +250,7 @@ For this reason, we will introduce the following new result which is heavily ins
   Then, there exists $h_0>0$ such that for all $h<h_0$ there are exactly $m$ discrete eigenvalues $\omega_{h,i}$, $i=1,\ldots,m$, of the discrete operator $T_h:\vec{K}_h\to \vec{K}_h$ with associated eigenfunctions $\phi_{h,i}$, $i=1,\ldots,m$, converging to $\omega$ and
   the the following estimates hold:
   \begin{equation}
-    \abs{\omega-\omega_{h,i}}\leq C \max\{\rho_{1,s}(h),\rho_{2,r}(h)\}^2\max\{\norm{\phi_1}_{\vec{H}(\Omega)},\ldots,\norm{\phi_m}_{\vec{H}(\Omega)}\}^2, \qquad i=1,\ldots,m, 
+    \abs{\omega-\omega_{h,i}}\leq C \max\{\rho_{1,s}(h),\rho_{2,r}(h)\}^2\max\{\norm{\phi_1}_{\vec{H}},\ldots,\norm{\phi_m}_{\vec{H}}\}^2, \qquad i=1,\ldots,m, 
   \end{equation}
   where $\omega_{h,i}$ are the discrete eigenvalues converging to $\omega$.
 \end{theorem}
@@ -288,7 +288,8 @@ For this reason, we will introduce the following new result which is heavily ins
   \end{equation}
   Since $T_h\phi_i, T_h\phi_j\in \vec{K}_h$ we know that $b(T_h\phi_j,p_{h,j})=0$ and $b(T_h\phi_i,p_{h,i})=0$, thus we can use the full regularity weak approximability condition to obtain
   \begin{align}
-    \abs{\Big((T-T_h)\phi_i,\phi_j\Big)} & \leq \abs{a((T-T_h)\phi_i,(T-T_h)\phi_j)} + C\norm{\vec{v}_h}_{\vec{V}} \Big(\rho_{2,r}(h)\norm{p_j}_{H^r(\Omega)} + \rho_{2,r}(h)\norm{p_i}_{H^r(\Omega)}\Big).
+    \abs{\Big((T-T_h)\phi_i,\phi_j\Big)} & \leq \abs{a((T-T_h)\phi_i,(T-T_h)\phi_j)} \\
+    &+ C\Big(\rho_{2,r}(h)\norm{T_h\phi_j}_{\vec{V}}\norm{p_j}_{H^r(\Omega)} + \rho_{2,r}(h)\norm{T_h\phi_i}_{\vec{V}}\norm{p_i}_{H^r(\Omega)}\Big).
   \end{align}
   Using the continuity of the bilinear form $a(\cdot,\cdot)$ and \eqref{eq:secondTerm} together with controlling $\norm{T\phi_i}_{\vec{V}}$ by $\norm{\phi_i}_{\vec{H}}$ by \cref{prop:BBG} we obtain
   \begin{align}
@@ -406,7 +407,7 @@ Under this assumption, the strong and weak approximability conditions are satisf
   \end{align}
   finally using the approximation properties of $\Sigma_h$ we obtain the desired estimate.
 \end{proof}
-\uz{Since we decided to realte the keep FEEC considerations to the next section I decided to keep discussing everything in terms of the right bounded inverse here.
+\uz{Since we decided to keep FEEC considerations to the next section I decided to keep discussing everything in terms of the right bounded inverse here.
 In the next section we can specify more what is going on.}
 \begin{remark}
   We would like to point out that \eqref{eq:approxSigma} for $\mathbb{P}_k$ Lagrangian elements with $k\geq 4$ is a consequence of the best approximation estimates presented in \cite[Theorem 4.1]{Suri} together with the use of the Poincaré inequality for functions with null integral average.
